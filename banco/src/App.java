@@ -10,6 +10,10 @@ public class App {
         var contaVip = new ContaVip(654987);
         contaVip.setLimite(1000);
 
+        //contaCorrente.depositar(-1);
+        contaCorrente.depositar(1000);
+        contaCorrente.transferir(500, null);
+
         System.out.println(contaCorrente.getSaldo());
         System.out.println(contaPoupanca.getSaldo());
         System.out.println("Saldo Vip:" + contaVip.getSaldo());
