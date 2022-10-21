@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import br.senac.sp.exception.StatusException;
 import br.senac.sp.impostos.Confins;
 import br.senac.sp.impostos.Icms;
 import br.senac.sp.impostos.Imposto;
@@ -14,9 +15,11 @@ import br.senac.sp.model.TipoImposto;
 import br.senac.sp.service.PedidoService;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 
 public class PrimaryController implements Initializable {
 
@@ -26,12 +29,56 @@ public class PrimaryController implements Initializable {
     @FXML private Label labelTotal;
     @FXML private Label labelDesconto;
     @FXML private ChoiceBox<Imposto> choiceBoxTibutacao;
+    @FXML private Label labelStatus;
 
     private PedidoService service = new PedidoService();
+    private Pedido pedido;
+
+    public void pagar(){
+        try {
+            pedido.pagar();
+            labelStatus.setText(pedido.getStatus().toString());
+        }catch(StatusException e){
+            mostrarMensagem(e.getMessage());
+        }
+    }
+
+    public void entregar(){
+        try {
+            pedido.entregar();
+            labelStatus.setText(pedido.getStatus().toString());
+        }catch(StatusException e){
+            mostrarMensagem(e.getMessage());
+        }
+    }
+
+    public void cancelar(){
+        try {
+            pedido.cancelar();
+            labelStatus.setText(pedido.getStatus().toString());
+        }catch(StatusException e){
+            mostrarMensagem(e.getMessage());
+        }
+    }
+
+    public void reabrir(){
+        try {
+            pedido.reabrir();
+            labelStatus.setText(pedido.getStatus().toString());
+        }catch(StatusException e){
+            mostrarMensagem(e.getMessage());
+        }
+    }
+
+    private void mostrarMensagem(String mensagem){
+        var alerta = new Alert(AlertType.ERROR);
+        alerta.setContentText(mensagem);
+        alerta.show();
+    }
 
     public void calcular(){
         
-        var pedido = carregarPedidoDoFormularios();
+        pedido = carregarPedidoDoFormularios();
         Imposto imposto = choiceBoxTibutacao.getValue();
 
         var valorComImposto = service.calcularValorComImposto(pedido, imposto);
