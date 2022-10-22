@@ -4,21 +4,22 @@ import java.math.BigDecimal;
 
 import br.senac.sp.model.Pedido;
 
-public class Icms extends Imposto {
+public class Cofins extends Imposto {
 
-    public Icms(Imposto outroImposto) {
+    public Cofins(Imposto outroImposto) {
         super(outroImposto);
     }
 
-    public BigDecimal calcular(Pedido pedido){
-        var imposto = pedido.getValor().multiply(new BigDecimal(0.05));
+    @Override
+    public BigDecimal calcular(Pedido pedido) {
+        var imposto = pedido.getValor().multiply(new BigDecimal(0.07));
         if (outroImposto != null) imposto.add(outroImposto.calcular(pedido));
         return imposto;
     }
 
     @Override
     public String toString() {
-        return "Icms";
+        return "Cofins";
     }
 
     

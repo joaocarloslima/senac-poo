@@ -3,59 +3,48 @@ package br.senac.sp.model;
 import java.math.BigDecimal;
 
 import br.senac.sp.exception.StatusException;
+import br.senac.sp.status.Aberto;
+import br.senac.sp.status.Status;
 
 public class Pedido {
     
     private String nome;
     private BigDecimal valor;
     private int qtdeDeItens;
-    private Status status = Status.ABERTO;
+    private Status status;
 
     public Pedido(String nome, BigDecimal valor, int qtdeDeItens) {
         this.nome = nome;
         this.valor = valor;
         this.qtdeDeItens = qtdeDeItens;
+        this.status = new Aberto(this);
     }
 
     public String abrirChamado(){
-        if (this.status == Status.ABERTO) return "Chamado para FINANCEIRO";
-        if (this.status == Status.PAGO) return "Chamado para LOGISTICA";
-        if (this.status == Status.ENTREGUE) return "Chamado para PÓS VENDA";
-        if (this.status == Status.CANCELADO) return "Chamado para VENDAS";
-        return "";
+        return this.status.abrirChamado();
     }
 
     public void pagar() throws StatusException{
-        if (this.status == Status.ABERTO) 
-            this.status = Status.PAGO;
-        else
-            throw new StatusException("Não pode pagar pedido que não está aberto");
+       this.status.pagar();
     }
 
     public void entregar() throws StatusException{
-        if (this.status == Status.PAGO) 
-            this.status = Status.ENTREGUE;
-        else
-            throw new StatusException("Não pode entregar pedido que não está pago");
+        this.status.entregar();
     }
 
     public void cancelar() throws StatusException{
-        if (this.status == Status.ABERTO || this.status == Status.PAGO)
-            this.status = Status.CANCELADO;
-        else
-            throw new StatusException("Não pode cancelar pedido " + this.status);
+        this.status.cancelar();
     }
 
     public void reabrir() throws StatusException{
-        if (this.status == Status.CANCELADO) 
-            this.status = Status.ABERTO;
-        else
-            throw new StatusException("Não pode reabrir pedido " + this.status);
+        this.status.reabrir();
     }
 
 
 
-
+    public void setStatus(Status status) {
+        this.status = status;
+    }
 
 
     public Status getStatus() {

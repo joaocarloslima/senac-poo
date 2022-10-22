@@ -7,11 +7,8 @@ import br.senac.sp.descontos.DescontoPorDia;
 import br.senac.sp.descontos.DescontoPorQuantidade;
 import br.senac.sp.descontos.DescontoPorValor;
 import br.senac.sp.descontos.SemDesconto;
-import br.senac.sp.impostos.Icms;
 import br.senac.sp.impostos.Imposto;
-import br.senac.sp.impostos.Ipi;
 import br.senac.sp.model.Pedido;
-import br.senac.sp.model.TipoImposto;
 
 public class PedidoService {
 

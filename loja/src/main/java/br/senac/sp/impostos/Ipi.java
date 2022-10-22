@@ -5,10 +5,16 @@ import java.math.BigDecimal;
 import br.senac.sp.model.Pedido;
 
 //Design Pattern - Strategy
-public class Ipi implements Imposto {
+public class Ipi extends Imposto {
     
+    public Ipi(Imposto outroImposto) {
+        super(outroImposto);
+    }
+
     public BigDecimal calcular(Pedido pedido){
-        return pedido.getValor().multiply(new BigDecimal(1.03));
+        var imposto = pedido.getValor().multiply(new BigDecimal(0.03));
+        if (outroImposto != null) imposto.add(outroImposto.calcular(pedido));
+        return imposto;
     }
 
     @Override

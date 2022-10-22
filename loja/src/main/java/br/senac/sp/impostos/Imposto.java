@@ -4,8 +4,14 @@ import java.math.BigDecimal;
 
 import br.senac.sp.model.Pedido;
 
-public interface Imposto {
+public abstract class Imposto {
 
-    BigDecimal calcular(Pedido pedido);
+    protected Imposto outroImposto;
+
+    public Imposto(Imposto outroImposto) {
+        this.outroImposto = outroImposto;
+    }
+
+    public abstract BigDecimal calcular(Pedido pedido);
 
 }

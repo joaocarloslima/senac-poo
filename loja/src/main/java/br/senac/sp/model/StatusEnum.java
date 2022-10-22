@@ -1,6 +1,6 @@
 package br.senac.sp.model;
 
-public enum Status {
+public enum StatusEnum {
     ABERTO,
     PAGO,
     ENTREGUE,

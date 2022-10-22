@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import br.senac.sp.exception.StatusException;
+import br.senac.sp.impostos.Cofins;
 import br.senac.sp.impostos.Confins;
 import br.senac.sp.impostos.Icms;
 import br.senac.sp.impostos.Imposto;
@@ -79,7 +80,7 @@ public class PrimaryController implements Initializable {
     public void calcular(){
         
         pedido = carregarPedidoDoFormularios();
-        Imposto imposto = choiceBoxTibutacao.getValue();
+        Imposto imposto = new Ipi(new Icms(new Cofins(null)));
 
         var valorComImposto = service.calcularValorComImposto(pedido, imposto);
         labelTotal.setText("R$ " + valorComImposto.setScale(2, RoundingMode.HALF_UP).toString());
