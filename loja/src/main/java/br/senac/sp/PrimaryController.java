@@ -7,7 +7,6 @@ import java.util.ResourceBundle;
 
 import br.senac.sp.exception.StatusException;
 import br.senac.sp.impostos.Cofins;
-import br.senac.sp.impostos.Confins;
 import br.senac.sp.impostos.Icms;
 import br.senac.sp.impostos.Imposto;
 import br.senac.sp.impostos.Ipi;
