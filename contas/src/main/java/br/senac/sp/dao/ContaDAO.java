@@ -9,9 +9,9 @@ import br.senac.sp.model.Conta;
 
 public class ContaDAO {
     
-    private static final String URL = "jdbc:mysql://localhost:3307/contas";
-    private static final String USER = "root";
-    private static final String PASSWORD = "";
+    private static final String URL = "jdbc:mysql://185.211.7.205/u553405907_fiap";
+    private static final String USER = "u553405907_fiap";
+    private static final String PASSWORD = "Senac@2022";
 
     public void inserir(Conta conta) throws SQLException{
         var con = DriverManager.getConnection(URL, USER, PASSWORD);
