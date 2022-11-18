@@ -4,7 +4,9 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import br.senac.sp.dao.CategoriaDAO;
 import br.senac.sp.dao.ContaDAO;
+import br.senac.sp.model.Categoria;
 import br.senac.sp.model.Conta;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -32,7 +34,14 @@ public class PrimaryController implements Initializable {
     @FXML Button botaoApagar;
     @FXML Button botaoCancelar;
 
-    private ContaDAO dao = new ContaDAO();
+    @FXML TextField textFieldNomeCategoria;
+    @FXML Button botaoSalvarCategoria;
+    @FXML TableView<Categoria> tabelaCategoria;
+    @FXML TableColumn<Categoria, Integer> colunaIdCategoria;
+    @FXML TableColumn<Categoria, String> colunaIdNomeCategoria;
+
+    private ContaDAO contaDao = new ContaDAO();
+    private CategoriaDAO categoriaDao = new CategoriaDAO();
 
     private Conta contaSelecionada = null;
 
@@ -43,7 +52,7 @@ public class PrimaryController implements Initializable {
         ); 
         try{
             if (contaSelecionada == null ){
-                dao.inserir(conta);
+                contaDao.inserir(conta);
             }else{
                atualizar();
             }
@@ -54,9 +63,19 @@ public class PrimaryController implements Initializable {
         carregar();
     }
 
+    public void salvarCategoria(){
+        try {
+            categoriaDao.inserir(
+                new Categoria(textFieldNomeCategoria.getText())
+            );
+        } catch (SQLException e) {
+            mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
+        }
+    }
+
     public void carregar(){
         try {
-            tabela.getItems().setAll(dao.listarTodas());
+            tabela.getItems().setAll(contaDao.listarTodas());
             contaSelecionada = null;
             atualizarView();
         } catch (SQLException e) {
@@ -66,7 +85,7 @@ public class PrimaryController implements Initializable {
 
     public void apagar(){
         try {
-            dao.apagar(contaSelecionada);
+            contaDao.apagar(contaSelecionada);
             carregar();
         } catch (SQLException e) {
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
@@ -80,7 +99,7 @@ public class PrimaryController implements Initializable {
             Double.valueOf(textFieldValor.getText())
         );
         try {
-            dao.atualizar(conta);
+            contaDao.atualizar(conta);
             carregar();
         } catch (SQLException e) {
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
