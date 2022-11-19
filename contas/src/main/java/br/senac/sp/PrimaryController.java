@@ -5,17 +5,20 @@ import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 import br.senac.sp.dao.CategoriaDAO;
-import br.senac.sp.dao.ContaDAO;
+import br.senac.sp.dao.ContaDAOMemory;
+import br.senac.sp.dao.ContaDAOMySql;
+import br.senac.sp.dao.ContaDaoInterface;
 import br.senac.sp.model.Categoria;
 import br.senac.sp.model.Conta;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -24,11 +27,13 @@ public class PrimaryController implements Initializable {
 
     @FXML TextField textFieldDescricao;
     @FXML TextField textFieldValor;
+    @FXML ChoiceBox<Categoria> choiceBoxCategoria;
     @FXML TableView<Conta> tabela;
 
     @FXML TableColumn<Conta, Integer> colunaId;
     @FXML TableColumn<Conta, String> colunaDescricao;
     @FXML TableColumn<Conta, Double> colunaValor;
+    @FXML TableColumn<Conta, Categoria> colunaCategoria;
 
     @FXML Button botaoSalvar;
     @FXML Button botaoApagar;
@@ -40,15 +45,25 @@ public class PrimaryController implements Initializable {
     @FXML TableColumn<Categoria, Integer> colunaIdCategoria;
     @FXML TableColumn<Categoria, String> colunaIdNomeCategoria;
 
-    private ContaDAO contaDao = new ContaDAO();
-    private CategoriaDAO categoriaDao = new CategoriaDAO();
+    private ContaDaoInterface contaDao;
+    private CategoriaDAO categoriaDao;
 
     private Conta contaSelecionada = null;
+
+    public PrimaryController(){
+        try {
+            contaDao = new ContaDAOMySql();
+            categoriaDao = new CategoriaDAO();
+        } catch (Exception e) {
+            mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
+        }
+    }
 
     public void salvar(){
         var conta = new Conta(
             textFieldDescricao.getText(), 
-            Double.valueOf(textFieldValor.getText())
+            Double.valueOf(textFieldValor.getText()),
+            choiceBoxCategoria.getValue()
         ); 
         try{
             if (contaSelecionada == null ){
@@ -57,7 +72,7 @@ public class PrimaryController implements Initializable {
                atualizar();
             }
             
-        }catch(SQLException e){
+        }catch(Exception e){
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
         }
         carregar();
@@ -68,7 +83,8 @@ public class PrimaryController implements Initializable {
             categoriaDao.inserir(
                 new Categoria(textFieldNomeCategoria.getText())
             );
-        } catch (SQLException e) {
+            carregar();
+        } catch (Exception e) {
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
         }
     }
@@ -76,9 +92,10 @@ public class PrimaryController implements Initializable {
     public void carregar(){
         try {
             tabela.getItems().setAll(contaDao.listarTodas());
+            tabelaCategoria.getItems().setAll(categoriaDao.listarTodas());
             contaSelecionada = null;
             atualizarView();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
         }
     }
@@ -86,6 +103,15 @@ public class PrimaryController implements Initializable {
     public void apagar(){
         try {
             contaDao.apagar(contaSelecionada);
+            carregar();
+        } catch (Exception e) {
+            mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
+        }
+    }
+
+    public void apagarCategoria(){
+        try {
+            categoriaDao.apagar(tabelaCategoria.getSelectionModel().getSelectedItem());
             carregar();
         } catch (SQLException e) {
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
@@ -96,12 +122,13 @@ public class PrimaryController implements Initializable {
         var conta = new Conta(
             contaSelecionada.getId(),
             textFieldDescricao.getText(),
-            Double.valueOf(textFieldValor.getText())
+            Double.valueOf(textFieldValor.getText()),
+            choiceBoxCategoria.getValue()
         );
         try {
             contaDao.atualizar(conta);
             carregar();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
         }
     }
@@ -131,10 +158,20 @@ public class PrimaryController implements Initializable {
         colunaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colunaDescricao.setCellValueFactory(new PropertyValueFactory<>("descricao"));
         colunaValor.setCellValueFactory(new PropertyValueFactory<>("valor"));
+        colunaCategoria.setCellValueFactory(new PropertyValueFactory<>("categoria"));
+
+        colunaIdCategoria.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colunaIdNomeCategoria.setCellValueFactory(new PropertyValueFactory<>("nome"));
 
         botaoApagar.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("icons/delete.png"))));
         botaoSalvar.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("icons/salvar.png"))));
         botaoCancelar.setGraphic(new ImageView(new Image(getClass().getResourceAsStream("icons/cancel.png"))));
+
+        try {
+            choiceBoxCategoria.getItems().setAll(categoriaDao.listarTodas());
+        } catch (SQLException e) {
+            mostrarMensagem("Erro. " + e.getMessage(), AlertType.ERROR);
+        }
 
         carregar();
     }
